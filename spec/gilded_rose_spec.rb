@@ -34,7 +34,6 @@ describe "#update_quality" do
           expect(item.quality).to eql(0); 
         }
       end
-
     end
 
     context "Aged Brie" do
@@ -155,9 +154,5 @@ describe "#update_quality" do
     }
 
     before { update_quality(items) }
-
-    # it "your specs here" do
-    #   pending
-    # end
   end
 end
