@@ -52,6 +52,7 @@ describe "#update_quality" do
         let(:initial_quality) { 50 }
         it {
           update_quality([item]); 
+          expect(item.sell_in).to eql(initial_sell_in - 1);
           expect(item.quality).to eql(50);
         }
       end
@@ -69,12 +70,12 @@ describe "#update_quality" do
       end
 
       context "after sell_in date" do
-        let(:initial_sell_in) { -5 }
-        let(:initial_quality) { 50 }
+        let(:initial_sell_in) { 10 }
+        let(:initial_quality) { 5 }
         it { 
           update_quality([item]); 
           expect(item.sell_in).to eql(initial_sell_in - 1);
-          expect(item.quality).to eql(50);
+          expect(item.quality).to eql(initial_quality + 1);
         }
       end
     end
@@ -136,11 +137,24 @@ describe "#update_quality" do
 
     context "Conjured" do
       let(:name) { "Conjured" }
-      it { 
-        update_quality([item]); 
-        expect(item.sell_in).to eql(initial_sell_in - 1);
-        expect(item.quality).to eql(initial_quality - 2);        
-      }
+
+      context "before sell_in date" do
+        let(:initial_sell_in) { 5 }
+        it { 
+          update_quality([item]); 
+          expect(item.sell_in).to eql(initial_sell_in - 1);
+          expect(item.quality).to eql(initial_quality - 1);        
+        }
+      end
+
+      context "after sell_in date" do
+        let(:initial_sell_in) { 0 }
+        it {
+          update_quality([item]);
+          expect(item.sell_in).to eql(initial_sell_in - 1);
+          expect(item.quality).to eql(initial_quality - 2);        
+        }
+      end
     end
 
   end

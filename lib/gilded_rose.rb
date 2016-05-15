@@ -15,12 +15,37 @@ class Update
       else
         (item.quality - 2) < 0 ? item.quality = 0 : item.quality -= 2
       end
+    when "Aged Brie"
+      if item.sell_in > 0
+        item.quality += 1
+      else
+        item.quality += 2
+      end
+      item.sell_in -= 1
+      item.quality = 50 if item.quality >= 50
+    when "Sulfuras, Hand of Ragnaros"
+    when "Backstage passes to a TAFKAL80ETC concert"
+      if item.sell_in <= 0
+        item.quality = 0
+      elsif item.sell_in <= 5
+        item.quality += 3
+      elsif item.sell_in <= 10
+        item.quality += 2
+      else
+        item.quality -= 1
+      end
+      item.sell_in -= 1
+    when "Conjured"
+      if item.sell_in > 0
+        item.quality -= 1
+      else
+        item.quality -= 2
+      end
+      item.sell_in -= 1
     else
-      puts "none"
+      # puts "none"
     end
   end
-
-
 end
 
 def update_quality(items)
