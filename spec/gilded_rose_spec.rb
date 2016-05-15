@@ -7,21 +7,77 @@ describe "#update_quality" do
     let(:initial_quality) { 10 }
     let(:item) { Item.new(name, initial_sell_in, initial_quality) }
 
-    # before { update_quality([item]) }
-
     context "Normal Items" do
       let(:name) { "NORMAL ITEM" }
-      it { update_quality([item]); expect(item.quality).to eql(initial_quality - 1) }
+
+      context "before sell_in date ended" do
+        it { 
+          update_quality([item]); 
+          expect(item.quality).to eql(initial_quality - 1) 
+        }
+      end
+
+      context "on last day of sell_in date" do
+        let(:initial_sell_in) { 0 }
+        let(:initial_quality) { 5 }
+        it { 
+          update_quality([item]); 
+          expect(item.quality).to eql(initial_quality - 2);
+        }
+      end
+
+      context "after sell_in date ended" do
+        let(:initial_sell_in) { -1 }
+        let(:initial_quality) { 1 }
+        it {
+          update_quality([item]); 
+          expect(item.quality).to eql(0); 
+        }
+      end
+
     end
 
     context "Aged Brie" do
       let(:name) { "Aged Brie" }
-      it { 
-        update_quality([item]); 
-        expect(item.quality).to eql(initial_quality + 1);
-        expect(item.quality).not_to be > 50; 
-        expect(item.quality).not_to be < 0; 
-      }
+      context "with normal cases" do 
+        it { 
+          update_quality([item]); 
+          expect(item.quality).to eql(initial_quality + 1);
+          expect(item.quality).not_to be > 50; 
+          expect(item.quality).not_to be < 0; 
+        }
+      end
+
+      context "with maximum quality equals to 50" do
+        let(:initial_sell_in) { -1 }
+        let(:initial_quality) { 50 }
+        it {
+          update_quality([item]); 
+          expect(item.quality).to eql(50);
+        }
+      end
+
+      context "on last day of sell_in date" do
+        let(:initial_sell_in) { 0 }
+        let(:initial_quality) { 10 }
+        it { 
+          update_quality([item]); 
+          expect(item.sell_in).to eql(initial_sell_in - 1);
+          expect(item.quality).to eql(initial_quality + 2);
+          expect(item.quality).not_to be > 50; 
+          expect(item.quality).not_to be < 0; 
+        }
+      end
+
+      context "after sell_in date" do
+        let(:initial_sell_in) { -5 }
+        let(:initial_quality) { 50 }
+        it { 
+          update_quality([item]); 
+          expect(item.sell_in).to eql(initial_sell_in - 1);
+          expect(item.quality).to eql(50);
+        }
+      end
     end
 
     context "Sulfuras" do
@@ -68,11 +124,24 @@ describe "#update_quality" do
           expect(item.quality).to eql(0);
         } 
       end
+      context "with 0 days of sell_in date" do
+        let(:initial_sell_in) { -1 }
+        it { 
+          update_quality([item]); 
+          expect(item.sell_in).to eql(initial_sell_in - 1);
+          expect(item.quality).to eql(0);
+        } 
+      end
+
     end
 
     context "Conjured" do
       let(:name) { "Conjured" }
-      it { update_quality([item]) }
+      it { 
+        update_quality([item]); 
+        expect(item.sell_in).to eql(initial_sell_in - 1);
+        expect(item.quality).to eql(initial_quality - 2);        
+      }
     end
 
   end
