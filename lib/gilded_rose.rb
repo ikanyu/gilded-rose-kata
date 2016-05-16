@@ -7,44 +7,73 @@ class Update
     @item = item
   end
 
+  def reduce_quality_amount
+    0
+  end
+
   def check_quality
     case item.name
     when "NORMAL ITEM"
-      if item.sell_in > 0
-        item.quality -= 1
-      else
-        (item.quality - 2) < 0 ? item.quality = 0 : item.quality -= 2
-      end
+      NormalUpdate.new(item).reduce_quality_amount
+      
     when "Aged Brie"
-      if item.sell_in > 0
-        item.quality += 1
-      else
-        item.quality += 2
-      end
-      item.sell_in -= 1
-      item.quality = 50 if item.quality >= 50
+      AgedBrieUpdate.new(item).reduce_quality_amount
     when "Sulfuras, Hand of Ragnaros"
     when "Backstage passes to a TAFKAL80ETC concert"
-      if item.sell_in <= 0
-        item.quality = 0
-      elsif item.sell_in <= 5
-        item.quality += 3
-      elsif item.sell_in <= 10
-        item.quality += 2
-      else
-        item.quality -= 1
-      end
+      BackstagePassUpdate.new(item).reduce_quality_amount
       item.sell_in -= 1
     when "Conjured"
-      if item.sell_in > 0
-        item.quality -= 1
-      else
-        item.quality -= 2
-      end
+      ConjuredUpdate.new(item).reduce_quality_amount
       item.sell_in -= 1
-    else
-      # puts "none"
     end
+  end
+end
+
+class AgedBrieUpdate < Update
+  def reduce_quality_amount
+    minus = item.sell_in > 0 ? 1 : 2
+    item.quality += minus
+    item.quality = 50 if item.quality > 50
+    item.sell_in -= 1
+  end
+end
+
+class SulfurasUpdate < Update
+  def reduce_quality_amount
+    0
+  end
+end
+
+class BackstagePassUpdate < Update
+  def reduce_quality_amount
+    return item.quality = 0 if item.sell_in <= 0
+    minus = if item.sell_in <= 5
+      3
+    elsif item.sell_in <= 10
+      2
+    else
+      -1
+    end
+    item.quality += minus
+    item.quality = 50 if item.quality > 50
+    item.quality = 0 if item.quality < 0
+  end
+end
+
+class ConjuredUpdate < Update
+  def reduce_quality_amount
+    minus = item.sell_in > 0 ? -1 : -2
+    item.quality += minus
+    item.quality = 0 if item.quality < 0
+  end
+end
+
+class NormalUpdate < Update
+  def reduce_quality_amount
+    minus = item.sell_in > 0 ? -1 : -2
+    item.quality += minus
+    item.quality = 0 if item.quality < 0
+    item.sell_in -= 1
   end
 end
 
