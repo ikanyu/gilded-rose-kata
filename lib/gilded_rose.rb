@@ -11,6 +11,10 @@ class Update
     0
   end
 
+  def maxed?
+    item.quality = 50 if item.quality > 50
+  end
+
   def check_quality
     case item.name
     when "NORMAL ITEM"
@@ -33,7 +37,7 @@ class AgedBrieUpdate < Update
   def reduce_quality_amount
     minus = item.sell_in > 0 ? 1 : 2
     item.quality += minus
-    item.quality = 50 if item.quality > 50
+    maxed?
     item.sell_in -= 1
   end
 end
@@ -55,7 +59,7 @@ class BackstagePassUpdate < Update
       -1
     end
     item.quality += minus
-    item.quality = 50 if item.quality > 50
+    maxed?
     item.quality = 0 if item.quality < 0
   end
 end
