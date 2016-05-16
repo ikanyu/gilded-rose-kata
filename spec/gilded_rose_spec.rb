@@ -34,6 +34,15 @@ describe "#update_quality" do
           expect(item.quality).to eql(0); 
         }
       end
+
+      context "quality never negative" do
+        let(:initial_sell_in) { 1 }
+        let(:initial_quality) { 0 }
+        it {
+          update_quality([item]);
+          expect(item.quality).to eql(0);
+        }
+      end
     end
 
     context "Aged Brie" do
@@ -124,6 +133,7 @@ describe "#update_quality" do
           expect(item.quality).to eql(0);
         } 
       end
+      
       context "with 0 days of sell_in date" do
         let(:initial_sell_in) { -1 }
         it { 
@@ -131,6 +141,15 @@ describe "#update_quality" do
           expect(item.sell_in).to eql(initial_sell_in - 1);
           expect(item.quality).to eql(0);
         } 
+      end
+
+      context "with maximum quality" do
+        let(:initial_sell_in) { 10 }
+        let(:initial_quality) { 50 }
+        it {
+          update_quality([item]);
+          expect(item.quality).to eql(50);
+        }
       end
 
     end
