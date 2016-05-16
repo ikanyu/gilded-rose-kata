@@ -187,5 +187,13 @@ describe "#update_quality" do
     }
 
     before { update_quality(items) }
+
+    it {
+      expect(items[0].quality).to eql(9);
+      expect(items[0].sell_in).to eql(4);
+
+      expect(items[1].quality).to eql(11);
+      expect(items[1].sell_in).to eql(2);
+    }
   end
 end
