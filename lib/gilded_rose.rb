@@ -15,21 +15,19 @@ class Update
     item.quality = 50 if item.quality > 50
   end
 
+  def minus_sell_in
+    item.sell_in -= 1
+  end
+
   def check_quality
-    case item.name
-    when "NORMAL ITEM"
-      NormalUpdate.new(item).reduce_quality_amount
-      
-    when "Aged Brie"
-      AgedBrieUpdate.new(item).reduce_quality_amount
-    when "Sulfuras, Hand of Ragnaros"
-    when "Backstage passes to a TAFKAL80ETC concert"
-      BackstagePassUpdate.new(item).reduce_quality_amount
-      item.sell_in -= 1
-    when "Conjured"
-      ConjuredUpdate.new(item).reduce_quality_amount
-      item.sell_in -= 1
+    update_name = case item.name
+    when "NORMAL ITEM" then NormalUpdate
+    when "Aged Brie" then AgedBrieUpdate
+    when "Sulfuras, Hand of Ragnaros" then SulfurasUpdate
+    when "Backstage passes to a TAFKAL80ETC concert" then BackstagePassUpdate
+    when "Conjured" then ConjuredUpdate
     end
+    update_name.new(item).reduce_quality_amount
   end
 end
 
@@ -38,7 +36,7 @@ class AgedBrieUpdate < Update
     minus = item.sell_in > 0 ? 1 : 2
     item.quality += minus
     maxed?
-    item.sell_in -= 1
+    minus_sell_in
   end
 end
 
@@ -50,7 +48,10 @@ end
 
 class BackstagePassUpdate < Update
   def reduce_quality_amount
-    return item.quality = 0 if item.sell_in <= 0
+    if item.sell_in <= 0
+      minus_sell_in
+      return item.quality = 0 
+    end
     minus = if item.sell_in <= 5
       3
     elsif item.sell_in <= 10
@@ -58,6 +59,7 @@ class BackstagePassUpdate < Update
     else
       -1
     end
+    minus_sell_in
     item.quality += minus
     maxed?
     item.quality = 0 if item.quality < 0
@@ -69,6 +71,7 @@ class ConjuredUpdate < Update
     minus = item.sell_in > 0 ? -1 : -2
     item.quality += minus
     item.quality = 0 if item.quality < 0
+    minus_sell_in
   end
 end
 
@@ -77,7 +80,7 @@ class NormalUpdate < Update
     minus = item.sell_in > 0 ? -1 : -2
     item.quality += minus
     item.quality = 0 if item.quality < 0
-    item.sell_in -= 1
+    minus_sell_in
   end
 end
 
