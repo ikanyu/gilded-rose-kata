@@ -23,11 +23,11 @@ class Update
 
   def check_quality
     update_name = case item.name
-    when "NORMAL ITEM" then NormalUpdate
-    when "Aged Brie" then AgedBrieUpdate
-    when "Sulfuras, Hand of Ragnaros" then SulfurasUpdate
-    when "Backstage passes to a TAFKAL80ETC concert" then BackstagePassUpdate
-    when "Conjured" then ConjuredUpdate
+    when "NORMAL ITEM" then NormalUpdator
+    when "Aged Brie" then AgedBrieUpdator
+    when "Sulfuras, Hand of Ragnaros" then SulfurasUpdator
+    when "Backstage passes to a TAFKAL80ETC concert" then BackstagePassUpdator
+    when "Conjured" then ConjuredUpdator
     end
     update_name.new(item).reduce_quality_amount
     update_name.new(item).minus_sell_in
@@ -36,13 +36,13 @@ class Update
   end
 end
 
-class AgedBrieUpdate < Update
+class AgedBrieUpdator < Update
   def reduce_quality_amount
     item.quality += (item.sell_in > 0 ? 1 : 2)
   end
 end
 
-class SulfurasUpdate < Update
+class SulfurasUpdator < Update
   def reduce_quality_amount
     0
   end
@@ -54,7 +54,7 @@ class SulfurasUpdate < Update
   end
 end
 
-class BackstagePassUpdate < Update
+class BackstagePassUpdator < Update
   def reduce_quality_amount
     return item.quality = 0 if item.sell_in <= 0
     minus = if item.sell_in <= 5
@@ -68,13 +68,13 @@ class BackstagePassUpdate < Update
   end
 end
 
-class ConjuredUpdate < Update
+class ConjuredUpdator < Update
   def reduce_quality_amount
     item.quality += (item.sell_in > 0 ? -1 : -2)
   end
 end
 
-class NormalUpdate < Update
+class NormalUpdator < Update
   def reduce_quality_amount
     item.quality += (item.sell_in > 0 ? -1 : -2)
   end
