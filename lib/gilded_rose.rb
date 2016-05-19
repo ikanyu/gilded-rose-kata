@@ -9,8 +9,16 @@ class Update
     0
   end
 
+  def max_limit
+    50
+  end
+
+  def min_limit
+    0
+  end
+
   def maxed?
-    item.quality = 50 if item.quality > 50
+    item.quality = max_limit if item.quality > max_limit
   end
 
   def minus_sell_in
@@ -18,21 +26,32 @@ class Update
   end
 
   def quality_too_small?
-    item.quality = 0 if item.quality < 0
+    item.quality = min_limit if item.quality < min_limit
   end
 
-  def check_quality
-    update_name = case item.name
+  def update_all(name)
+    name = name.new(item)
+    name.reduce_quality_amount
+    name.minus_sell_in
+    name.maxed?
+    name.quality_too_small?
+  end
+
+  def update_quality(items)
+    items.each do |item|
+      item.check_class
+    end
+  end
+
+  def check_class
+    updator_name = case item.name
     when "NORMAL ITEM" then NormalUpdator
     when "Aged Brie" then AgedBrieUpdator
     when "Sulfuras, Hand of Ragnaros" then SulfurasUpdator
     when "Backstage passes to a TAFKAL80ETC concert" then BackstagePassUpdator
     when "Conjured" then ConjuredUpdator
     end
-    update_name.new(item).reduce_quality_amount
-    update_name.new(item).minus_sell_in
-    update_name.new(item).maxed?
-    update_name.new(item).quality_too_small?
+    update_all(updator_name)
   end
 end
 
@@ -82,7 +101,7 @@ end
 
 def update_quality(items)
   items.each do |item|
-    Update.new(item).check_quality
+    Update.new(item).check_class
   end
 end
 
