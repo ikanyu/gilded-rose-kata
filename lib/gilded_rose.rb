@@ -1,5 +1,5 @@
 class Update
-  attr_accessor :item
+  attr_reader :item
 
   def initialize(item)
     @item = item
